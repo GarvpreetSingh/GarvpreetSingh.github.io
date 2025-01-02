@@ -49,7 +49,7 @@
         }
     </style>
    
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode/1.4.4/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode/1.4.4/qrcode.min.js">
 </head>
 <body>
     <h1>Farewell Party Entry Form</h1>
