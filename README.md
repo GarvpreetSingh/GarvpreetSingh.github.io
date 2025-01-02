@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -48,25 +49,30 @@
             margin: 10px auto;
         }
     </style>
-   
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode/1.4.4/qrcode.min.js">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode/1.4.4/qrcode.min.js"></script>
 </head>
 <body>
-    <h1>Farewell Party Entry Form</h1>
+     <h1>Farewell Party Entry Form</h1>
+
  <form id="entryForm">
-    <label for="name">Name:</label>
+        <label for="name">Name:</label>
         <input type="text" id="name" name="name" required>
+
  <label for="class">Class:</label>
         <input type="text" id="class" name="class" required>
+
  <label for="section">Section:</label>
         <input type="text" id="section" name="section" required>
-    <button type="button" onclick="generateQRCode()">Generate QR Code</button>
+
+<button type="button" onclick="generateQRCode()">Generate QR Code</button>
     </form>
-<div class="qr-code" id="qrCodeSection" style="display: none;">
+
+ <div class="qr-code" id="qrCodeSection" style="display: none;">
         <h2>QR Code</h2>
         <canvas id="qrCanvas"></canvas>
     </div>
-<div class="admin-page">
+
+ <div class="admin-page">
         <h1>Admin Sign In</h1>
         <form id="adminLoginForm">
             <label for="adminEmail">Email:</label>
@@ -75,18 +81,18 @@
  <label for="adminPassword">Password:</label>
             <input type="password" id="adminPassword" name="adminPassword" required>
 
- <button type="button" onclick="adminLogin()">Login</button>
+  <button type="button" onclick="adminLogin()">Login</button>
         </form>
 
-  <div id="scannerSection" style="display: none;">
+ <div id="scannerSection" style="display: none;">
             <h1>Admin QR Code Scanner</h1>
             <video id="preview" style="width: 100%;"></video>
         </div>
     </div>
 
-  <script src="https://unpkg.com/@zxing/library@1.10.1/umd/index.min.js"></script>
- <script>
-        const storedQRCodes = new Map(); 
+<script src="https://unpkg.com/@zxing/library@1.10.1/umd/index.min.js"></script>
+<script>
+        const storedQRCodes = new Map(); // Map to store generated QR data
 
         function generateQRCode() {
             const name = document.getElementById('name').value;
@@ -95,7 +101,7 @@
 
             if (name && className && section) {
                 const qrData = `Name: ${name}, Class: ${className}, Section: ${section}`;
-                storedQRCodes.set(qrData, true); 
+                storedQRCodes.set(qrData, true); // Store QR data in the map
 
                 const canvas = document.getElementById('qrCanvas');
                 QRCode.toCanvas(canvas, qrData, { width: 200 }, function (error) {
@@ -117,7 +123,7 @@
                 document.getElementById('scannerSection').style.display = 'block';
                 document.getElementById('adminLoginForm').style.display = 'none';
 
-                
+                // Start QR Code Scanner
                 const codeReader = new ZXing.BrowserMultiFormatReader();
                 codeReader.decodeFromVideoDevice(null, 'preview', (result, err) => {
                     if (result) {
@@ -139,4 +145,3 @@
     </script>
 </body>
 </html>
-
