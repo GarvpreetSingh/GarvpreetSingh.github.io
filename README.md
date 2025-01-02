@@ -53,14 +53,11 @@
 </head>
 <body>
     <h1>Farewell Party Entry Form</h1>
-
  <form id="entryForm">
     <label for="name">Name:</label>
         <input type="text" id="name" name="name" required>
-
  <label for="class">Class:</label>
         <input type="text" id="class" name="class" required>
-
  <label for="section">Section:</label>
         <input type="text" id="section" name="section" required>
     <button type="button" onclick="generateQRCode()">Generate QR Code</button>
@@ -69,7 +66,6 @@
         <h2>QR Code</h2>
         <canvas id="qrCanvas"></canvas>
     </div>
-
 <div class="admin-page">
         <h1>Admin Sign In</h1>
         <form id="adminLoginForm">
