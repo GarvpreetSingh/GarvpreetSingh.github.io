@@ -94,24 +94,10 @@
         let generatedQRCodeData = '';  // Store the data of the generated QR code
         let scannerActive = false;     // Flag to track scanner state
 
-        // Function to get cookies by name
-        function getCookie(name) {
-            let match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
-            return match ? match[2] : null;
-        }
-
-        // Function to set a cookie
-        function setCookie(name, value, days) {
-            let date = new Date();
-            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-            let expires = "expires=" + date.toUTCString();
-            document.cookie = name + "=" + value + ";" + expires + ";path=/";
-        }
-
-        // Check if the QR code has been validated before on page load
+        // Check if the QR code has been validated before
         window.onload = () => {
-            const savedQRCodeData = getCookie('generatedQRCodeData');
-            const savedValidationStatus = getCookie('isQRCodeValidated');
+            const savedQRCodeData = sessionStorage.getItem('generatedQRCodeData');
+            const savedValidationStatus = sessionStorage.getItem('isQRCodeValidated');
 
             if (savedQRCodeData && savedValidationStatus === 'true') {
                 isQRCodeValidated = true;
@@ -160,9 +146,9 @@
                 // Reset the validation flag
                 isQRCodeValidated = false;
 
-                // Save to cookies
-                setCookie('generatedQRCodeData', studentName, 365); // Set cookie for 1 year
-                setCookie('isQRCodeValidated', 'false', 365);
+                // Save to sessionStorage
+                sessionStorage.setItem('generatedQRCodeData', studentName);
+                sessionStorage.setItem('isQRCodeValidated', 'false');
             });
         });
 
@@ -186,8 +172,8 @@
                             console.log('Scanned Result:', scannedText);
                             isQRCodeValidated = true; // Mark the QR code as validated
 
-                            // Save to cookies
-                            setCookie('isQRCodeValidated', 'true', 365);
+                            // Save to sessionStorage
+                            sessionStorage.setItem('isQRCodeValidated', 'true');
                         }
 
                         // Hide the scanner and show the validation message
