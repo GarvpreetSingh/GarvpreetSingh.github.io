@@ -72,6 +72,7 @@
         <button id="startScanner">Start QR Code Scanner</button>
         <video id="video" width="300" height="200" style="border: 1px solid black; display: none;"></video>
         <p id="scannedResult"></p>
+        <button id="scanNext" style="display: none;">Scan Next QR</button>
     </div>
 
     <button id="adminLogin">Admin Sign In</button>
@@ -87,9 +88,11 @@
         const startScannerButton = document.getElementById('startScanner');
         const video = document.getElementById('video');
         const scannedResult = document.getElementById('scannedResult');
+        const scanNextButton = document.getElementById('scanNext');
 
         let isQRCodeValidated = false; // Flag to track QR code validation status
         let generatedQRCodeData = '';  // Store the data of the generated QR code
+        let scannerActive = false;     // Flag to track scanner state
 
         // Check if the QR code has been validated before
         window.onload = () => {
@@ -151,6 +154,9 @@
 
         // Start QR Code Scanner
         startScannerButton.addEventListener('click', () => {
+            if (scannerActive) return; // Prevent starting multiple scanners
+
+            scannerActive = true;
             video.style.display = 'block';
             const codeReader = new ZXing.BrowserQRCodeReader();
             codeReader.decodeFromVideoDevice(null, video, (result, err) => {
@@ -172,10 +178,25 @@
                     } else {
                         scannedResult.textContent = 'Invalid QR Code';
                     }
+
+                    // Show "Scan Next" button after scanning
+                    scanNextButton.style.display = 'inline-block';
                 } else if (err && !(err instanceof ZXing.NotFoundException)) {
                     console.error(err);
                 }
             });
+        });
+
+        // Handle "Scan Next" button click
+        scanNextButton.addEventListener('click', () => {
+            // Reset everything for next scan
+            scannedResult.textContent = '';
+            scanNextButton.style.display = 'none';
+            video.style.display = 'none';
+
+            // Restart the scanner for the next scan
+            scannerActive = false;
+            startScannerButton.click();
         });
     </script>
 </body>
