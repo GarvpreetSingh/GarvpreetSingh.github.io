@@ -49,7 +49,9 @@
             margin: 10px auto;
         }
     </style>
+    <!-- Add QRCode.js library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode/1.4.4/qrcode.min.js"></script>
+    <!-- Add ZXing library for the browser -->
     <script src="https://cdn.jsdelivr.net/npm/@zxing/library@latest/umd/index.js"></script>
 </head>
 <body>
@@ -73,4 +75,130 @@
         <button id="scanNext" style="display: none;">Scan Next QR</button>
     </div>
 
-    <but
+    <button id="adminLogin">Admin Sign In</button>
+
+    <script>
+        // Elements
+        const adminLoginButton = document.getElementById('adminLogin');
+        const adminPage = document.getElementById('admin-page');
+        const memberForm = document.getElementById('member-form');
+        const qrCodeContainer = document.getElementById('qrCodeContainer');
+        const studentNameInput = document.getElementById('studentName');
+        const generateQRButton = document.getElementById('generateQR');
+        const startScannerButton = document.getElementById('startScanner');
+        const video = document.getElementById('video');
+        const scannedResult = document.getElementById('scannedResult');
+        const scanNextButton = document.getElementById('scanNext');
+
+        let isQRCodeValidated = false; // Flag to track QR code validation status
+        let generatedQRCodeData = '';  // Store the data of the generated QR code
+        let scannerActive = false;     // Flag to track scanner state
+
+        // Check if the QR code has been validated before
+        window.onload = () => {
+            const savedQRCodeData = localStorage.getItem('generatedQRCodeData');
+            const savedValidationStatus = localStorage.getItem('isQRCodeValidated');
+
+            if (savedQRCodeData && savedValidationStatus === 'true') {
+                isQRCodeValidated = true;
+                generatedQRCodeData = savedQRCodeData;
+                scannedResult.textContent = 'QR Code already validated';
+                qrCodeContainer.innerHTML = `<p>QR Code already generated for: ${savedQRCodeData}</p>`;
+            }
+        };
+
+        // Admin Sign-In Logic
+        adminLoginButton.addEventListener('click', () => {
+            const password = prompt('Enter Admin Password:');
+            if (password === 'admin123') {
+                adminPage.style.display = 'block';
+                memberForm.style.display = 'none';
+            } else {
+                alert('Incorrect password');
+            }
+        });
+
+        // QR Code Generation Logic
+        generateQRButton.addEventListener('click', () => {
+            const studentName = studentNameInput.value;
+            if (!studentName) {
+                alert('Please enter a student name');
+                return;
+            }
+
+            qrCodeContainer.innerHTML = ''; // Clear previous QR code
+
+            // Generate QR code and store the data
+            QRCode.toDataURL(studentName, { width: 128, height: 128 }, function (err, url) {
+                if (err) {
+                    console.error(err);
+                    return;
+                }
+
+                // Store the generated QR code data
+                generatedQRCodeData = studentName;
+
+                // Create an image element to display the QR code
+                const img = document.createElement('img');
+                img.src = url;
+                qrCodeContainer.appendChild(img);
+
+                // Reset the validation flag
+                isQRCodeValidated = false;
+
+                // Save to localStorage
+                localStorage.setItem('generatedQRCodeData', studentName);
+                localStorage.setItem('isQRCodeValidated', 'false');
+            });
+        });
+
+        // Start QR Code Scanner
+        startScannerButton.addEventListener('click', () => {
+            if (scannerActive) return; // Prevent starting multiple scanners
+
+            scannerActive = true;
+            video.style.display = 'block';
+            const codeReader = new ZXing.BrowserQRCodeReader();
+            codeReader.decodeFromVideoDevice(null, video, (result, err) => {
+                if (result) {
+                    const scannedText = result.text;
+
+                    // Check if the scanned QR code is the generated one
+                    if (scannedText === generatedQRCodeData) {
+                        if (isQRCodeValidated) {
+                            scannedResult.textContent = 'QR Code already validated!';
+                        } else {
+                            scannedResult.textContent = `${scannedText}, Welcome To The Farewell Party`;
+                            console.log('Scanned Result:', scannedText);
+                            isQRCodeValidated = true; // Mark the QR code as validated
+
+                            // Save to localStorage
+                            localStorage.setItem('isQRCodeValidated', 'true');
+                        }
+
+                        // Hide the scanner and show the validation message
+                        video.style.display = 'none';
+                        scanNextButton.style.display = 'inline-block';
+                    } else {
+                        scannedResult.textContent = 'Invalid QR Code';
+                    }
+                } else if (err && !(err instanceof ZXing.NotFoundException)) {
+                    console.error(err);
+                }
+            });
+        });
+
+        // Handle "Scan Next" button click
+        scanNextButton.addEventListener('click', () => {
+            // Reset everything for next scan
+            scannedResult.textContent = '';
+            scanNextButton.style.display = 'none';
+            video.style.display = 'none';
+
+            // Restart the scanner for the next scan
+            scannerActive = false;
+            startScannerButton.click();
+        });
+    </script>
+</body>
+</html>
