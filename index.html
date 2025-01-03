@@ -175,12 +175,13 @@
                             // Save to localStorage
                             localStorage.setItem('isQRCodeValidated', 'true');
                         }
+
+                        // Hide the scanner and show the validation message
+                        video.style.display = 'none';
+                        scanNextButton.style.display = 'inline-block';
                     } else {
                         scannedResult.textContent = 'Invalid QR Code';
                     }
-
-                    // Show "Scan Next" button after scanning
-                    scanNextButton.style.display = 'inline-block';
                 } else if (err && !(err instanceof ZXing.NotFoundException)) {
                     console.error(err);
                 }
