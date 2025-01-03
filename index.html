@@ -49,47 +49,81 @@
             margin: 10px auto;
         }
     </style>
-    <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@zxing/library@latest"></script>
 </head>
 <body>
-    <h1>Farewell Party Entry Form</h1>
+    <h1>Farewell Party Entry</h1>
 
-    <form id="entryForm">
-        <label for="name">Name:</label>
-        <input type="text" id="name" name="name" required>
-
-        <label for="class">Class:</label>
-        <input type="text" id="class" name="class" required>
-
-        <label for="section">Section:</label>
-        <input type="text" id="section" name="section" required>
-
-        <button type="button" onclick="generateQRCode()">Generate QR Code</button>
+    <!-- Member Mode -->
+    <form id="member-form">
+        <h2>Member Mode</h2>
+        <label for="studentName">Enter Student Name:</label>
+        <input type="text" id="studentName" required>
+        <button type="button" id="generateQR">Generate QR Code</button>
+        <div class="qr-code" id="qrCodeContainer"></div>
     </form>
 
-    <div class="qr-code" id="qrCodeSection" style="display: none;">
-        <h2>QR Code</h2>
-        <canvas id="qrCanvas"></canvas>
+    <!-- Admin Mode -->
+    <div class="admin-page" id="admin-page" style="display: none;">
+        <h2>Admin Mode</h2>
+        <button id="startScanner">Start QR Code Scanner</button>
+        <video id="video" width="300" height="200" style="border: 1px solid black; display: none;"></video>
+        <p id="scannedResult"></p>
     </div>
 
+    <button id="adminLogin">Admin Sign In</button>
+
     <script>
-        function generateQRCode() {
-            const name = document.getElementById('name').value;
-            const className = document.getElementById('class').value;
-            const section = document.getElementById('section').value;
+        const adminLoginButton = document.getElementById('adminLogin');
+        const adminPage = document.getElementById('admin-page');
+        const memberForm = document.getElementById('member-form');
+        const qrCodeContainer = document.getElementById('qrCodeContainer');
+        const studentNameInput = document.getElementById('studentName');
+        const generateQRButton = document.getElementById('generateQR');
+        const startScannerButton = document.getElementById('startScanner');
+        const video = document.getElementById('video');
+        const scannedResult = document.getElementById('scannedResult');
 
-            if (name && className && section) {
-                const qrData = `Name: ${name}, Class: ${className}, Section: ${section}`;
-                const canvas = document.getElementById('qrCanvas');
-                QRCode.toCanvas(canvas, qrData, { width: 200 }, function (error) {
-                    if (error) console.error(error);
-                });
-
-                document.getElementById('qrCodeSection').style.display = 'block';
+        // Toggle Admin and Member Modes
+        adminLoginButton.addEventListener('click', () => {
+            const password = prompt('Enter Admin Password:');
+            if (password === 'admin123') {
+                adminPage.style.display = 'block';
+                memberForm.style.display = 'none';
             } else {
-                alert('Please fill all fields');
+                alert('Incorrect password');
             }
-        }
+        });
+
+        // Generate QR Code
+        generateQRButton.addEventListener('click', () => {
+            const studentName = studentNameInput.value;
+            if (!studentName) {
+                alert('Please enter a student name');
+                return;
+            }
+
+            qrCodeContainer.innerHTML = '';
+            QRCode.toCanvas(qrCodeContainer, studentName, (error) => {
+                if (error) console.error(error);
+                console.log('QR code generated');
+            });
+        });
+
+        // Start QR Code Scanner
+        startScannerButton.addEventListener('click', () => {
+            video.style.display = 'block';
+            const codeReader = new ZXing.BrowserQRCodeReader();
+            codeReader.decodeFromVideoDevice(null, video, (result, err) => {
+                if (result) {
+                    const scannedText = result.text;
+                    scannedResult.textContent = `${scannedText}, Welcome To The Farewell Party`;
+                    console.log('Scanned Result:', scannedText);
+                } else if (err && !(err instanceof ZXing.NotFoundException)) {
+                    console.error(err);
+                }
+            });
+        });
     </script>
 </body>
 </html>
