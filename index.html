@@ -49,6 +49,9 @@
             margin: 10px auto;
         }
     </style>
+    <!-- Add QRCode.js library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode/1.4.4/qrcode.min.js"></script>
+    <!-- Add ZXing library -->
     <script src="https://cdn.jsdelivr.net/npm/@zxing/library@latest"></script>
 </head>
 <body>
@@ -103,10 +106,11 @@
                 return;
             }
 
-            qrCodeContainer.innerHTML = '';
-            QRCode.toCanvas(qrCodeContainer, studentName, (error) => {
-                if (error) console.error(error);
-                console.log('QR code generated');
+            qrCodeContainer.innerHTML = ''; // Clear previous QR code
+            const qrCode = new QRCode(qrCodeContainer, {
+                text: studentName,
+                width: 128,
+                height: 128,
             });
         });
 
