@@ -94,7 +94,7 @@
         let generatedQRCodeData = '';  // Store the data of the generated QR code
         let scannerActive = false;     // Flag to track scanner state
 
-        // Check if the QR code has been validated before
+        // Check if the QR code has been validated before on page load
         window.onload = () => {
             const savedQRCodeData = localStorage.getItem('generatedQRCodeData');
             const savedValidationStatus = localStorage.getItem('isQRCodeValidated');
