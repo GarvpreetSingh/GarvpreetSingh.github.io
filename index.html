@@ -87,6 +87,9 @@
         const video = document.getElementById('video');
         const scannedResult = document.getElementById('scannedResult');
 
+        let isQRCodeValidated = false; // Flag to track QR code validation status
+        let generatedQRCodeData = '';  // Store the data of the generated QR code
+
         // Toggle Admin and Member Modes
         adminLoginButton.addEventListener('click', () => {
             const password = prompt('Enter Admin Password:');
@@ -108,17 +111,23 @@
 
             qrCodeContainer.innerHTML = ''; // Clear previous QR code
 
-            // Using the QRCode.toDataURL() method to generate the QR code
+            // Generate QR code and store the data
             QRCode.toDataURL(studentName, { width: 128, height: 128 }, function (err, url) {
                 if (err) {
                     console.error(err);
                     return;
                 }
 
+                // Store the generated QR code data
+                generatedQRCodeData = studentName;
+
                 // Create an image element to display the QR code
                 const img = document.createElement('img');
                 img.src = url;
                 qrCodeContainer.appendChild(img);
+
+                // Reset the validation flag
+                isQRCodeValidated = false;
             });
         });
 
@@ -129,13 +138,12 @@
             codeReader.decodeFromVideoDevice(null, video, (result, err) => {
                 if (result) {
                     const scannedText = result.text;
-                    scannedResult.textContent = `${scannedText}, Welcome To The Farewell Party`;
-                    console.log('Scanned Result:', scannedText);
-                } else if (err && !(err instanceof ZXing.NotFoundException)) {
-                    console.error(err);
-                }
-            });
-        });
-    </script>
-</body>
-</html>
+
+                    // Check if the scanned QR code is the generated one
+                    if (scannedText === generatedQRCodeData) {
+                        if (isQRCodeValidated) {
+                            scannedResult.textContent = 'QR Code already validated!';
+                        } else {
+                            scannedResult.textContent = `${scannedText}, Welcome To The Farewell Party`;
+                            console.log('Scanned Result:', scannedText);
+                            i
