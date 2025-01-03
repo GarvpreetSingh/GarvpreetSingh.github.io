@@ -117,7 +117,7 @@
             codeReader.decodeFromVideoDevice(null, video, (result, err) => {
                 if (result) {
                     const scannedText = result.text;
-                    scannedResult.textContent = ${scannedText}, Welcome To The Farewell Party;
+                    scannedResult.textContent = `${scannedText}, Welcome To The Farewell Party`;
                     console.log('Scanned Result:', scannedText);
                 } else if (err && !(err instanceof ZXing.NotFoundException)) {
                     console.error(err);
