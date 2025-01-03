@@ -91,6 +91,19 @@
         let isQRCodeValidated = false; // Flag to track QR code validation status
         let generatedQRCodeData = '';  // Store the data of the generated QR code
 
+        // Check if the QR code has been validated before
+        window.onload = () => {
+            const savedQRCodeData = localStorage.getItem('generatedQRCodeData');
+            const savedValidationStatus = localStorage.getItem('isQRCodeValidated');
+
+            if (savedQRCodeData && savedValidationStatus === 'true') {
+                isQRCodeValidated = true;
+                generatedQRCodeData = savedQRCodeData;
+                scannedResult.textContent = 'QR Code already validated';
+                qrCodeContainer.innerHTML = `<p>QR Code already generated for: ${savedQRCodeData}</p>`;
+            }
+        };
+
         // Admin Sign-In Logic
         adminLoginButton.addEventListener('click', () => {
             const password = prompt('Enter Admin Password:');
@@ -129,6 +142,10 @@
 
                 // Reset the validation flag
                 isQRCodeValidated = false;
+
+                // Save to localStorage
+                localStorage.setItem('generatedQRCodeData', studentName);
+                localStorage.setItem('isQRCodeValidated', 'false');
             });
         });
 
@@ -148,6 +165,9 @@
                             scannedResult.textContent = `${scannedText}, Welcome To The Farewell Party`;
                             console.log('Scanned Result:', scannedText);
                             isQRCodeValidated = true; // Mark the QR code as validated
+
+                            // Save to localStorage
+                            localStorage.setItem('isQRCodeValidated', 'true');
                         }
                     } else {
                         scannedResult.textContent = 'Invalid QR Code';
